@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { memo, useCallback } from 'react';
 import {
   Animated,
   FlatList,
@@ -15,7 +15,7 @@ type Props = {
   restaurants: Restaurant[];
 };
 
-export const NearbyRestaurants = ({ restaurants }: Props) => {
+export const NearbyRestaurants = memo(({ restaurants }: Props) => {
   const animatedStyle = useFadeInUp(160);
 
   const renderItem: ListRenderItem<Restaurant> = useCallback(
@@ -43,7 +43,7 @@ export const NearbyRestaurants = ({ restaurants }: Props) => {
       </View>
     </Animated.View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   list: {

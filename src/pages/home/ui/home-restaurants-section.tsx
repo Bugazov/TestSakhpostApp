@@ -3,10 +3,9 @@ import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import { colors } from '@app/styles/theme';
 import { useGetRestaurants } from '@entities/restaurant';
-import { Restaurant } from '@entities/restaurant/model/types';
+import { Restaurant } from '@entities/restaurant';
 import { NearbyRestaurants } from '@widgets/nearby-restaurants';
-import { SectionTitle } from '@shared/ui/section-title';
-import { withRemoteData } from '@shared/ui/remote-data';
+import { SectionTitle, withRemoteData } from '@shared/ui';
 
 type Props = {
   data: Restaurant[];

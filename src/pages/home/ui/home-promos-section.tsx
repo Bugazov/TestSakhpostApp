@@ -2,10 +2,9 @@ import React from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import { colors } from '@app/styles/theme';
-import { useGetPromos } from '@entities/promo';
-import { TPromoCard } from '@entities/promo/model/types';
+import { useGetPromos, TPromoCard } from '@entities/promo';
 import { PromoCarousel } from '@widgets/promo-carousel';
-import { withRemoteData } from '@shared/ui/remote-data';
+import { withRemoteData } from '@shared/ui';
 
 type Props = {
   data: TPromoCard[];

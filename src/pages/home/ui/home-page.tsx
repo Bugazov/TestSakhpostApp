@@ -3,7 +3,7 @@ import { Animated, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { colors } from '@app/styles/theme';
-import { useHomePageScroll } from '../model/use-home-page-scroll';
+import { useHomePageScroll } from '../model';
 import { HomePromosSection } from './home-promos-section';
 import { HomeRestaurantsSection } from './home-restaurants-section';
 
@@ -16,10 +16,9 @@ export const HomePage = () => {
     onScrollEndDrag,
     onMomentumScrollEnd,
     handlePromoLayout,
-    topInsetOffset,
     animatedPromoTranslateY,
     animatedTopRadius,
-    animatedTopPadding,
+    animatedTopInsetShift,
     promoOverlayOffset,
   } = useHomePageScroll(insets);
 
@@ -41,7 +40,6 @@ export const HomePage = () => {
       >
         <Animated.View
           style={{
-            paddingTop: topInsetOffset,
             transform: [{ translateY: animatedPromoTranslateY }],
           }}
           onLayout={handlePromoLayout}
@@ -53,13 +51,18 @@ export const HomePage = () => {
             styles.sectionOverlay,
             { marginTop: -promoOverlayOffset },
             {
-              paddingTop: animatedTopPadding,
               borderTopLeftRadius: animatedTopRadius,
               borderTopRightRadius: animatedTopRadius,
             },
           ]}
         >
-          <HomeRestaurantsSection />
+          <Animated.View
+            style={{
+              transform: [{ translateY: animatedTopInsetShift }],
+            }}
+          >
+            <HomeRestaurantsSection />
+          </Animated.View>
         </Animated.View>
       </Animated.ScrollView>
     </View>

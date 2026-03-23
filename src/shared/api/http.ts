@@ -18,16 +18,10 @@ const buildError = (status: number, url: string, body: unknown) => {
 
 export const http = async <T>(url: string, init?: RequestInit): Promise<T> => {
   const method = getMethod(init);
-  const startedAt = Date.now();
-
-  console.log(`[HTTP:REQ] ${method} ${url}`);
 
   try {
     const response = await fetch(url, init);
-    const durationMs = Date.now() - startedAt;
     const json = (await response.json()) as T;
-
-    console.log(`[HTTP:RES] ${method} ${url} ${response.status} ${durationMs}ms`);
 
     if (!response.ok) {
       throw buildError(response.status, url, json);
@@ -35,8 +29,6 @@ export const http = async <T>(url: string, init?: RequestInit): Promise<T> => {
 
     return json;
   } catch (error) {
-    const durationMs = Date.now() - startedAt;
-    console.log(`[HTTP:ERR] ${method} ${url} ${durationMs}ms`, error);
     throw error;
   }
 };

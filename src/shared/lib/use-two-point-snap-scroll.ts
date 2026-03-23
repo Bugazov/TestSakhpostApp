@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { NativeSyntheticEvent, NativeScrollEvent, ScrollView } from 'react-native';
 
 type Params = {
@@ -14,22 +14,16 @@ export const useTwoPointSnapScroll = ({
   zoneTolerance = 80,
   lockMs = 280,
 }: Params) => {
-  const [isDockedToTop, setIsDockedToTop] = useState(false);
   const scrollRef = useRef<ScrollView | null>(null);
   const dragStartOffsetRef = useRef(0);
   const autoSnappingRef = useRef(false);
+  const unlockTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const offsetY = event.nativeEvent.contentOffset.y;
-    const dockThreshold = Math.max(0, topOffset - Math.min(zoneTolerance, topOffset * 0.2));
-    setIsDockedToTop(offsetY >= dockThreshold);
-  };
-
-  const onScrollBeginDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+  const onScrollBeginDrag = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
     dragStartOffsetRef.current = event.nativeEvent.contentOffset.y;
-  };
+  }, []);
 
-  const onSnap = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+  const onSnap = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
     if (autoSnappingRef.current) {
       return;
     }
@@ -56,7 +50,7 @@ export const useTwoPointSnapScroll = ({
       targetOffset = offsetY < topOffset / 2 ? 0 : topOffset;
     }
 
-    if (!isDockedToTop && offsetY > topOffset + zoneTolerance) {
+    if (offsetY > topOffset + zoneTolerance) {
       targetOffset = null;
     }
 
@@ -66,15 +60,25 @@ export const useTwoPointSnapScroll = ({
 
     autoSnappingRef.current = true;
     scrollRef.current?.scrollTo({ y: targetOffset, animated: true });
-    setTimeout(() => {
+
+    if (unlockTimeoutRef.current) {
+      clearTimeout(unlockTimeoutRef.current);
+    }
+
+    unlockTimeoutRef.current = setTimeout(() => {
       autoSnappingRef.current = false;
+      unlockTimeoutRef.current = null;
     }, lockMs);
-  };
+  }, [lockMs, releaseDistance, topOffset, zoneTolerance]);
+
+  useEffect(() => () => {
+    if (unlockTimeoutRef.current) {
+      clearTimeout(unlockTimeoutRef.current);
+    }
+  }, []);
 
   return {
     scrollRef,
-    isDockedToTop,
-    onScroll,
     onScrollBeginDrag,
     onScrollEndDrag: onSnap,
     onMomentumScrollEnd: onSnap,

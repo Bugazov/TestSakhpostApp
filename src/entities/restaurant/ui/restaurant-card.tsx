@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { colors } from '@app/styles/theme';
@@ -8,7 +8,7 @@ type Props = {
   restaurant: Restaurant;
 };
 
-export const RestaurantCard = ({ restaurant }: Props) => {
+export const RestaurantCard = memo(({ restaurant }: Props) => {
   const imageUrl = restaurant.image?.url;
   const logoUrl = restaurant.logo?.url;
   const rating = Number(restaurant.rating || 0).toFixed(1);
@@ -42,7 +42,7 @@ export const RestaurantCard = ({ restaurant }: Props) => {
       </View>
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   card: {

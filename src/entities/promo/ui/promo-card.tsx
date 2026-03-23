@@ -9,7 +9,7 @@ type Props = {
   promo: TPromoCard;
 };
 
-export const PromoCard = ({ promo }: Props) => {
+export const PromoCard = React.memo(({ promo }: Props) => {
   return (
     <ImageBackground
       imageStyle={styles.image}
@@ -27,7 +27,7 @@ export const PromoCard = ({ promo }: Props) => {
       </View>
     </ImageBackground>
   );
-};
+});
 
 const styles = StyleSheet.create({
   card: {

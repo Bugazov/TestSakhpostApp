@@ -1,9 +1,7 @@
-import { useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import {
   Animated,
   LayoutChangeEvent,
-  NativeSyntheticEvent,
-  NativeScrollEvent,
 } from 'react-native';
 import { EdgeInsets } from 'react-native-safe-area-context';
 
@@ -16,14 +14,11 @@ const DOCK_ANIMATION_DISTANCE = 88;
 export const useHomePageScroll = (insets: EdgeInsets) => {
   const [promoSectionHeight, setPromoSectionHeight] = useState(PROMO_SECTION_HEIGHT);
   const promoSnapOffset = Math.max(0, promoSectionHeight - PROMO_OVERLAY_OFFSET);
-  const topInsetOffset = 0;
 
   const nativeScrollY = useRef(new Animated.Value(0)).current;
-  const scrollY = useRef(new Animated.Value(0)).current;
 
   const {
     scrollRef,
-    onScroll,
     onScrollBeginDrag,
     onScrollEndDrag,
     onMomentumScrollEnd,
@@ -31,30 +26,30 @@ export const useHomePageScroll = (insets: EdgeInsets) => {
     topOffset: promoSnapOffset,
     releaseDistance: 9,
     zoneTolerance: 92,
-    lockMs: 150,
+    lockMs: 100,
   });
 
-  const handlePromoLayout = (event: LayoutChangeEvent) => {
+  const handlePromoLayout = useCallback((event: LayoutChangeEvent) => {
     const height = Math.round(event.nativeEvent.layout.height);
     if (height > 0 && height !== promoSectionHeight) {
       setPromoSectionHeight(height);
     }
-  };
+  }, [promoSectionHeight]);
 
   const dockAnimationStart = useMemo(
     () => Math.max(0, promoSnapOffset - DOCK_ANIMATION_DISTANCE),
     [promoSnapOffset],
   );
 
-  const animatedTopRadius = scrollY.interpolate({
+  const animatedTopRadius = nativeScrollY.interpolate({
     inputRange: [dockAnimationStart, promoSnapOffset],
     outputRange: [28, 0],
     extrapolate: 'clamp',
   });
 
-  const animatedTopPadding = scrollY.interpolate({
+  const animatedTopInsetShift = nativeScrollY.interpolate({
     inputRange: [dockAnimationStart, promoSnapOffset],
-    outputRange: [16, insets.top + 16],
+    outputRange: [0, insets.top],
     extrapolate: 'clamp',
   });
 
@@ -66,13 +61,7 @@ export const useHomePageScroll = (insets: EdgeInsets) => {
 
   const handleScroll = Animated.event(
     [{ nativeEvent: { contentOffset: { y: nativeScrollY } } }],
-    {
-      useNativeDriver: true,
-      listener: (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-        scrollY.setValue(event.nativeEvent.contentOffset.y);
-        onScroll(event);
-      },
-    },
+    { useNativeDriver: true },
   );
 
   return {
@@ -82,10 +71,9 @@ export const useHomePageScroll = (insets: EdgeInsets) => {
     onScrollEndDrag,
     onMomentumScrollEnd,
     handlePromoLayout,
-    topInsetOffset,
     animatedPromoTranslateY,
     animatedTopRadius,
-    animatedTopPadding,
+    animatedTopInsetShift,
     promoOverlayOffset: PROMO_OVERLAY_OFFSET,
   };
 };

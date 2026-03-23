@@ -7,7 +7,10 @@ export const AppProviders = ({ children }: PropsWithChildren) => {
   return (
     <PersistQueryClientProvider
       client={queryClient}
-      persistOptions={{ persister: queryPersister }}
+      persistOptions={{
+        persister: queryPersister,
+        maxAge: 24 * 60 * 60 * 1000,
+      }}
     >
       {children}
     </PersistQueryClientProvider>

@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { memo, useCallback, useRef } from 'react';
 import {
   Animated,
   Dimensions,
@@ -19,17 +19,20 @@ type Props = {
 
 const HERO_CARD_WIDTH = Dimensions.get('window').width;
 
-export const PromoCarousel = ({ promos }: Props) => {
+export const PromoCarousel = memo(({ promos }: Props) => {
   const animatedStyle = useFadeInUp(80);
   const scrollX = useRef(new Animated.Value(0)).current;
 
-  const renderItem: ListRenderItem<TPromoCard> = ({ item }) => {
-    return (
+  const renderItem: ListRenderItem<TPromoCard> = useCallback(
+    ({ item }) => (
       <View style={styles.item}>
         <PromoCard promo={item} />
       </View>
-    );
-  };
+    ),
+    [],
+  );
+
+  const keyExtractor = useCallback((item: TPromoCard) => item.id, []);
 
   return (
     <Animated.View style={animatedStyle}>
@@ -38,7 +41,7 @@ export const PromoCarousel = ({ promos }: Props) => {
           horizontal
           data={promos}
           renderItem={renderItem}
-          keyExtractor={item => item.id}
+          keyExtractor={keyExtractor}
           showsHorizontalScrollIndicator={false}
           directionalLockEnabled
           nestedScrollEnabled
@@ -93,7 +96,7 @@ export const PromoCarousel = ({ promos }: Props) => {
       </View>
     </Animated.View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   carousel: {
