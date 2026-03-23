@@ -1,3 +1,41 @@
+# TestSakhpostApp
+
+## Как запустить проект
+
+### 1) Установить зависимости
+
+```sh
+npm install
+```
+
+### 2) Запустить Metro
+
+```sh
+npm start
+```
+
+### 3) Запустить приложение
+
+В новом терминале из корня проекта:
+
+- Android:
+
+```sh
+npm run android
+```
+
+- iOS (только macOS):
+
+```sh
+bundle install
+bundle exec pod install --project-directory=ios
+npm run ios
+```
+
+> Требуемая версия Node.js: `>= 22.11.0`.
+
+---
+
 This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
 
 # Getting Started
